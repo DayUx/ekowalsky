@@ -1,0 +1,13 @@
+export const host = 'https://backendskool.herokuapp.com/';
+export const registerRoute = host + '/register';
+export const loginRoute = host + '/login';
+export const userProfileRoute = host + '/userProfile';
+export const getSchoolsOfUserRoute = host + '/getSchoolsOfUser';
+export const getMessagesRoute = host + '/getMessages';
+export const getSchoolsRoute = host + '/getSchools';
+export const createSchoolRoute = host + '/createSchool';
+export const joinSchoolRoute = host + '/joinSchool';
+export const quitSchoolRoute = host + '/quitSchool';
+export const sendMessageRoute = host + '/sendMessage';
+export const getUserRoute = host + '/getUser';
+export const updateUserRoute = host + '/updateUser';
