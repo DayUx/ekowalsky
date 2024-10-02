@@ -6,7 +6,7 @@ const argv = yargs(hideBin(process.argv)).argv
 
 const mongoose = require('mongoose');
 
-const schoolSchema = new mongoose.Schema({
+const groupSchema = new mongoose.Schema({
     nom: {
         type: 'string',
         required: true
@@ -46,4 +46,4 @@ const schoolSchema = new mongoose.Schema({
 });
 
 
-module.exports = mongoose.model('Schools', schoolSchema);
+module.exports = mongoose.model('Groups', groupSchema);

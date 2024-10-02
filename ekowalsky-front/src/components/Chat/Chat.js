@@ -7,7 +7,7 @@ import {v4 as uuidv4} from "uuid";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 
-export default function Chat({school, socket, chatFunc}) {
+export default function Chat({group, socket, chatFunc}) {
 
     const [messages, setMessages] = useState([]);
     const scrollRef = useRef();
@@ -71,7 +71,7 @@ export default function Chat({school, socket, chatFunc}) {
                 method: "POST", headers: {
                     "Content-Type": "application/json", "x-access-token": localStorage.getItem("user")
                 }, body: JSON.stringify({
-                    id_school: school._id
+                    id_group: group._id
                 })
             }).then(response => response.json().then(data => ({
                 data: data, status: response.status
@@ -101,14 +101,14 @@ export default function Chat({school, socket, chatFunc}) {
             method: 'POST', headers: {
                 'Content-Type': 'application/json', 'x-access-token': user
             }, body: JSON.stringify({
-                from: data.id, to: school._id, message: msg,
+                from: data.id, to: group._id, message: msg,
             })
         }).then(response => response.json().then(data => ({
             data: data, status: response.status
         })).then(res => {
             if (res.data.status) {
                 socket.current.emit("send-msg", {
-                    to: school._id, from: user, msg,
+                    to: group._id, from: user, msg,
                 });
                 const msgs = [...messages];
                 msgs.push(res.data.message);
@@ -158,7 +158,7 @@ export default function Chat({school, socket, chatFunc}) {
 
     return (
 
-        <div className="school-page-body">
+        <div className="group-page-body">
             <div className="chat-messages">
                 {messages.map((message, index) => {
                     return <div className={"message"}>

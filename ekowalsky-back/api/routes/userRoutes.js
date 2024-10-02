@@ -1,14 +1,14 @@
 const {register,login, getUser,updateUser} = require("../controller/userController");
-const {images, messages, getSchools,createSchool,joinSchool, quitSchool, sendMessage} = require("../controller/schoolController")
+const {images, messages, getGroups,createGroup,joinGroup, quitGroup, sendMessage} = require("../controller/groupController")
 const router = require('express').Router();
 router.post("/register", register);
 router.post("/login",login);
-router.post("/getSchoolsOfUser", images)
+router.post("/getGroupsOfUser", images)
 router.post("/getMessages", messages)
-router.post("/getSchools", getSchools)
-router.post("/createSchool", createSchool)
-router.post("/joinSchool", joinSchool)
-router.post("/quitSchool", quitSchool)
+router.post("/getGroups", getGroups)
+router.post("/createGroup", createGroup)
+router.post("/joinGroup", joinGroup)
+router.post("/quitGroup", quitGroup)
 router.post("/sendMessage",sendMessage)
 router.post("/getUser", getUser)
 router.post("/updateUser", updateUser)

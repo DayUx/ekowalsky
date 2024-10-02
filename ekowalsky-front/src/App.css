@@ -202,12 +202,12 @@ input{
 
 }
 
-.dashboard .addSchoolMenu .existing-schools {
+.dashboard .addGroupMenu .existing-groups {
     width: 100%;
 
 }
 
-.dashboard .addSchoolMenu .existing-schools-list {
+.dashboard .addGroupMenu .existing-groups-list {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -220,17 +220,17 @@ input{
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
 }
 
-.dashboard .addSchoolMenu .existing-schools-list::-webkit-scrollbar {
+.dashboard .addGroupMenu .existing-groups-list::-webkit-scrollbar {
     width: 0px;
     background: transparent;
 }
 
-.dashboard .addSchoolMenu .existing-schools-list::-webkit-scrollbar-thumb {
+.dashboard .addGroupMenu .existing-groups-list::-webkit-scrollbar-thumb {
     background: red;
     width: 5px;
 }
 
-.dashboard .addSchoolMenu .existing-schools-filter {
+.dashboard .addGroupMenu .existing-groups-filter {
     border-radius: 50px;
     border: none;
     background: var(--quaternary-white);
@@ -242,7 +242,7 @@ input{
     margin-bottom: 10px;
 }
 
-.dashboard .school-page-header .school-page-title {
+.dashboard .group-page-header .group-page-title {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -250,14 +250,14 @@ input{
     gap: 50px;
 }
 
-.dashboard .school-page-header h1, .dashboard .school-page-header p {
+.dashboard .group-page-header h1, .dashboard .group-page-header p {
     color: var(--main-blue);
     margin: 0;
     padding: 0;
     text-transform: uppercase;
 }
 
-.dashboard .school-page-header button {
+.dashboard .group-page-header button {
     height: 50px;
     width: 50px;
     border-radius: 50px;
@@ -267,12 +267,12 @@ input{
     font-size: 30px;
     transform: inherit;
 }
-.dashboard .school-page-header button:hover {
+.dashboard .group-page-header button:hover {
     color: var(--main-blue);
     background: var(--quaternary-white);
 }
 
-.dashboard .school-page {
+.dashboard .group-page {
     flex: 1;
     height: 100%;
     display: flex;
@@ -283,7 +283,7 @@ input{
 }
 
 
-.dashboard .school-page-header {
+.dashboard .group-page-header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -297,7 +297,7 @@ input{
     box-sizing: border-box;
 }
 
-.dashboard .school-page-body{
+.dashboard .group-page-body{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -314,7 +314,7 @@ input{
 
 }
 
-.dashboard .school-page-body .chat-messages {
+.dashboard .group-page-body .chat-messages {
     flex: 1;
     width: 100%;
     display: flex;
@@ -326,17 +326,17 @@ input{
     min-height: 0;
 }
 
-.dashboard .school-page-body .chat-messages::-webkit-scrollbar {
+.dashboard .group-page-body .chat-messages::-webkit-scrollbar {
     width: 5px;
     background: var(--quaternary-white);
     border-radius: 50px;
 }
-.dashboard .school-page-body .chat-messages::-webkit-scrollbar-thumb {
+.dashboard .group-page-body .chat-messages::-webkit-scrollbar-thumb {
      width: 5px;
      background: var(--main-blue);
      border-radius: 50px;
  }
-.dashboard .school-page-body .chat-messages .message{
+.dashboard .group-page-body .chat-messages .message{
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -375,13 +375,13 @@ input{
 
 
 
-.dashboard .school-page-body .chat-messages .message-content{
+.dashboard .group-page-body .chat-messages .message-content{
     text-align: left;
 }
 
 
 
-.dashboard .school-page-body .input-container {
+.dashboard .group-page-body .input-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -394,7 +394,7 @@ input{
     padding: 0 20px;
     box-sizing: border-box;
 }
-.dashboard .school-page-body .input-container input {
+.dashboard .group-page-body .input-container input {
     border-radius: 50px;
     border: none;
     background: var(--quaternary-white);
@@ -403,7 +403,7 @@ input{
     outline: none;
     width: calc(100% - 100px);
 }
-.dashboard .school-page-body .input-container button {
+.dashboard .group-page-body .input-container button {
     height: 50px;
     width: 50px;
     border: none;
@@ -412,14 +412,14 @@ input{
     font-size: 30px;
     transform: inherit;
 }
-.dashboard .school-page-body .input-container button:hover {
+.dashboard .group-page-body .input-container button:hover {
     color: var(--main-blue);
 }
 
 
 
 
-.dashboard .addSchoolMenu, .dashboard .create-school-menu{
+.dashboard .addGroupMenu, .dashboard .create-group-menu{
     visibility: hidden;
     transition: 0.2s;
     background: var(--secondary-white);
@@ -438,7 +438,7 @@ input{
     gap: 20px;
     color: var(--dark-blue);
 }
-.dashboard .school-menu {
+.dashboard .group-menu {
     visibility: hidden;
     transition: 0.2s;
     position: fixed;
@@ -454,14 +454,14 @@ input{
     gap: 20px;
 }
 
-.dashboard .school-menu button{
+.dashboard .group-menu button{
     height: 80px;
     width: 80px;
     font-size: 30px;
 }
 
 
-.dashboard .visible.addSchoolMenu, .dashboard .create-school-menu.visible, .dashboard .school-menu.visible {
+.dashboard .visible.addGroupMenu, .dashboard .create-group-menu.visible, .dashboard .group-menu.visible {
     visibility: visible;
     transform: translate(-50%, -50%) scale(1);
 
@@ -617,7 +617,7 @@ input{
 }
 
 
-.dashboard .create-school-menu form {
+.dashboard .create-group-menu form {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -626,7 +626,7 @@ input{
     width: 100%;
 }
 
-.dashboard .create-school-menu input {
+.dashboard .create-group-menu input {
     border-radius: 50px;
     border: none;
     background: var(--secondary-grey);
@@ -655,7 +655,7 @@ input{
 }
 
 
-.dashboard .school-button {
+.dashboard .group-button {
     background: var(--main-white);
     border: none;
     padding: 0 10px;
@@ -673,17 +673,17 @@ input{
 }
 
 
-.dashboard .school-button:hover {
+.dashboard .group-button:hover {
     background: var(--tertiary-white);
     color: var(--main-blue);
 }
 
-.dashboard .create-school button {
+.dashboard .create-group button {
     background: var(--main-blue);
 }
 
 
-.dashboard .school-button .school-button-icon {
+.dashboard .group-button .group-button-icon {
     width: 20px;
     height: 20px;
     background-size: cover;
@@ -751,7 +751,7 @@ input{
     background: var(--main-white);
 }
 
-.dashboard .school_page {
+.dashboard .group_page {
     background: var(--main-white);
     flex: 1;
     box-shadow: rgba(0, 0, 0, 0.09) 0px 0px 10px;

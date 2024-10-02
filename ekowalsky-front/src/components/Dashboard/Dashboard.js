@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 
 import {
-    getSchoolsOfUserRoute, getSchoolsRoute, createSchoolRoute, joinSchoolRoute, quitSchoolRoute, host, getUserRoute
+    getGroupsOfUserRoute, getGroupsRoute, createGroupRoute, joinGroupRoute, quitGroupRoute, host, getUserRoute
 } from "../../utils/APIRoutes";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlus, faEllipsisV, faUsers, faSignOutAlt, faTimes} from '@fortawesome/free-solid-svg-icons'
@@ -15,40 +15,40 @@ export default function Dashboard() {
 
     const navigate = useNavigate();
     const user = localStorage.getItem('user');
-    const [mySchools, setMySchools] = useState([]);
-    const [schools, setSchools] = useState([]);
+    const [myGroups, setMyGroups] = useState([]);
+    const [groups, setGroups] = useState([]);
     const [active, setActive] = useState(false);
-    const [addSchool, setAddSchool] = useState(false);
+    const [addGroup, setAddGroup] = useState(false);
     const [selectedFile, setSelectedFile] = useState();
     const [filter, setFilter] = useState('');
-    const [selectedSchool, setSelectedSchool] = useState({});
-    const [schoolMenu, setSchoolMenu] = useState(false);
+    const [selectedGroup, setSelectedGroup] = useState({});
+    const [groupMenu, setGroupMenu] = useState(false);
     const [imageProfile, setImageProfile] = useState('');
     const [modifyProfile, setModifyProfile] = useState(false);
-    const [schoolFields, setSchoolFields] = useState({
+    const [groupFields, setGroupFields] = useState({
         name: '', description: '',
     });
 
     const chatFunc = useRef(null);
     const socket = useRef();
-    let schoolsLoaded = false;
+    let groupsLoaded = false;
     const [overlay, setOverlay] = useState(false);
 
     useEffect(() => {
-        if (selectedSchool._id) {
+        if (selectedGroup._id) {
             if (socket.current) {
                 socket.current.removeAllListeners("msg-receive");
             }
             socket.current = io(host);
-            socket.current.emit("joinRoom", {token: user, school_id: selectedSchool._id});
+            socket.current.emit("joinRoom", {token: user, group_id: selectedGroup._id});
             console.log(socket.current);
             chatFunc.refresh();
         }
-    }, [selectedSchool]);
+    }, [selectedGroup]);
 
-    const createSchool = () => {
+    const createGroup = () => {
         setOverlay(true);
-        setAddSchool(true);
+        setAddGroup(true);
         setActive(false);
     }
 
@@ -57,15 +57,15 @@ export default function Dashboard() {
 
         let list = [];
         if (!active) {
-            getOtherSchools();
+            getOtherGroups();
         }
         setActive(!active);
-        setAddSchool(false);
+        setAddGroup(false);
         setOverlay(true);
     };
 
-    const getOtherSchools = () => {
-        fetch(getSchoolsRoute, {
+    const getOtherGroups = () => {
+        fetch(getGroupsRoute, {
             method: 'POST', headers: {
                 'Content-Type': 'application/json', 'x-access-token': user
             },
@@ -73,16 +73,16 @@ export default function Dashboard() {
             data: data, status: response.status
         })).then(res => {
 
-            setSchools(res.data.schools);
+            setGroups(res.data.groups);
         }))
     }
 
 
-    const addSchoolSubmit = (e) => {
+    const addGroupSubmit = (e) => {
         e.preventDefault();
-        let t = schoolFields;
+        let t = groupFields;
         t.image = selectedFile;
-        fetch(createSchoolRoute, {
+        fetch(createGroupRoute, {
             method: 'POST', headers: {
                 'x-access-token': user, 'Content-Type': 'application/json'
             }, body: JSON.stringify(t)
@@ -90,8 +90,8 @@ export default function Dashboard() {
             data: data, status: response.status
         })).then(res => {
             if (res.data.status === true) {
-                let t = schools;
-                setMySchools(mySchools.concat(res.data.school));
+                let t = groups;
+                setMyGroups(myGroups.concat(res.data.group));
                 closeEverything();
             }
         }));
@@ -100,8 +100,8 @@ export default function Dashboard() {
     const closeEverything = () => {
         setActive(false);
         setOverlay(false);
-        setAddSchool(false);
-        setSchoolMenu(false);
+        setAddGroup(false);
+        setGroupMenu(false);
     };
 
 
@@ -112,10 +112,10 @@ export default function Dashboard() {
     };
 
 
-    const addSchoolChangeHandler = (e) => {
+    const addGroupChangeHandler = (e) => {
         const {name, value} = e.target;
-        setSchoolFields((schoolFields) => ({
-            ...schoolFields, [name]: value
+        setGroupFields((groupFields) => ({
+            ...groupFields, [name]: value
         }));
     }
 
@@ -129,7 +129,7 @@ export default function Dashboard() {
             disconnect();
         }
 
-        loadSchools();
+        loadGroups();
         setUserProfilePicture(wt_decode(user).id);
     }, []);
 
@@ -146,17 +146,17 @@ export default function Dashboard() {
     }
 
 
-    const loadSchools = () => {
+    const loadGroups = () => {
         let token = user;
         const userJson = wt_decode(token);
-        setMySchools([]);
+        setMyGroups([]);
 
         if (!userJson) {
             localStorage.removeItem('user');
             navigate('/login');
         } else {
             let t = [];
-            fetch(getSchoolsOfUserRoute, {
+            fetch(getGroupsOfUserRoute, {
                 method: 'POST', headers: {
                     'x-access-token': token, 'Content-Type': 'application/json'
                 }
@@ -166,43 +166,43 @@ export default function Dashboard() {
             }).then(data => ({
                 data: data
             })).then(res => {
-                setMySchools(res.data.servers_id_and_image);
+                setMyGroups(res.data.servers_id_and_image);
             })
-            schoolsLoaded = false;
+            groupsLoaded = false;
         }
     }
 
 
-    const quitSchool = (id) => {
-        setSelectedSchool({});
-        fetch(quitSchoolRoute, {
+    const quitGroup = (id) => {
+        setSelectedGroup({});
+        fetch(quitGroupRoute, {
             method: 'POST', headers: {
                 'x-access-token': user, 'Content-Type': 'application/json'
             }, body: JSON.stringify({
-                id_school: id
+                id_group: id
             })
         }).then(response => response.json().then(data => ({
             data: data, status: response.status
         })).then(res => {
 
             if (res.data.status === true) {
-                loadSchools();
-                getOtherSchools();
+                loadGroups();
+                getOtherGroups();
             }
         }));
     }
-    const joinSchool = (id) => {
-        fetch(joinSchoolRoute, {
+    const joinGroup = (id) => {
+        fetch(joinGroupRoute, {
             method: 'POST', headers: {
                 'x-access-token': user, 'Content-Type': 'application/json'
-            }, body: JSON.stringify({id_school: id})
+            }, body: JSON.stringify({id_group: id})
         }).then(response => response.json().then(data => ({
             data: data, status: response.status
         })).then(res => {
             if (res.data.status === true) {
-                let t = mySchools;
-                setMySchools(mySchools.concat(res.data.school));
-                getOtherSchools();
+                let t = myGroups;
+                setMyGroups(myGroups.concat(res.data.group));
+                getOtherGroups();
                 closeEverything();
             }
         }));
@@ -242,16 +242,16 @@ export default function Dashboard() {
     return (<div className="dashboard">
         <nav>
             <div className="nav-wrapper">
-                {mySchools.map((school, index) => {
+                {myGroups.map((group, index) => {
                     return <button
                         onClick={() => {
 
-                            setSelectedSchool(school);
+                            setSelectedGroup(group);
                             setModifyProfile(false);
                         }}
 
                         style={{
-                            backgroundImage: "url(" + school.image + ")",
+                            backgroundImage: "url(" + group.image + ")",
                         }}>
                     </button>
                 })}
@@ -264,25 +264,25 @@ export default function Dashboard() {
             }}>
             </button>
         </nav>
-        <div className="school-page">
+        <div className="group-page">
 
             {modifyProfile ? <UserProfile/> : (
-                selectedSchool._id ? <div className="school-page-header">
-                        <div className={"school-page-title"}>
+                selectedGroup._id ? <div className="group-page-header">
+                        <div className={"group-page-title"}>
                             <h1>
-                                {selectedSchool.nom}
+                                {selectedGroup.nom}
                             </h1>
                             <p>
-                                {selectedSchool.description}
+                                {selectedGroup.description}
                             </p>
                         </div>
                         <button onClick={() => {
-                            setSchoolMenu(true);
+                            setGroupMenu(true);
                             setOverlay(true);
                         }}><FontAwesomeIcon icon={faEllipsisV}/></button>
-                    </div> : <h2>No school selected</h2>)
+                    </div> : <h2>No group selected</h2>)
             }
-            {modifyProfile?undefined:(selectedSchool._id ? <Chat school={selectedSchool} socket={socket} chatFunc={chatFunc}/> : null)}
+            {modifyProfile?undefined:(selectedGroup._id ? <Chat group={selectedGroup} socket={socket} chatFunc={chatFunc}/> : null)}
 
 
 
@@ -293,58 +293,58 @@ export default function Dashboard() {
 
 
         </div>
-        <div className={active ? 'visible addSchoolMenu' : 'addSchoolMenu'}>
-            <div className={"existing-schools"}>
-                <div className="addSchoolMenu_header">
-                    <h1>Join a school</h1>
-                    <input placeholder={"Search a school"} value={filter} onChange={(e) => {
+        <div className={active ? 'visible addGroupMenu' : 'addGroupMenu'}>
+            <div className={"existing-groups"}>
+                <div className="addGroupMenu_header">
+                    <h1>Join a group</h1>
+                    <input placeholder={"Search a group"} value={filter} onChange={(e) => {
                         setFilter(e.target.value)
-                    }} className={"existing-schools-filter"}/>
-                    <div className={"existing-schools-list"}>
-                        {schools.length !== 0 ?
+                    }} className={"existing-groups-filter"}/>
+                    <div className={"existing-groups-list"}>
+                        {groups.length !== 0 ?
 
-                            schools.map((school, index) => {
-                                if (!filter || school.nom.toLowerCase().includes(filter.toLowerCase())) {
+                            groups.map((group, index) => {
+                                if (!filter || group.nom.toLowerCase().includes(filter.toLowerCase())) {
                                     return <div onClick={() => {
-                                        joinSchool(school._id)
-                                    }} className="school-button" value={school._id}>
-                                        <div className={"school-button-icon"} style={{
-                                            backgroundImage: "url(" + school.image + ")",
+                                        joinGroup(group._id)
+                                    }} className="group-button" value={group._id}>
+                                        <div className={"group-button-icon"} style={{
+                                            backgroundImage: "url(" + group.image + ")",
                                         }}></div>
-                                        <h2>{school.nom}</h2></div>
+                                        <h2>{group.nom}</h2></div>
                                 } else {
 
                                 }
-                            }) : <h2>No school found</h2>}
+                            }) : <h2>No group found</h2>}
                     </div>
 
                 </div>
             </div>
-            <div className={"create-school"}>
-                <button onClick={createSchool}>Add a non existing school</button>
+            <div className={"create-group"}>
+                <button onClick={createGroup}>Add a non existing group</button>
             </div>
         </div>
 
-        <div className={schoolMenu ? "school-menu visible" : "school-menu"}>
+        <div className={groupMenu ? "group-menu visible" : "group-menu"}>
             <button onClick={closeEverything}><FontAwesomeIcon icon={faTimes}/></button>
             <button onClick={() => {
-                quitSchool(selectedSchool._id);
+                quitGroup(selectedGroup._id);
                 closeEverything();
 
             }}><FontAwesomeIcon icon={faSignOutAlt}/></button>
         </div>
 
-        <div className={addSchool ? 'visible create-school-menu' : 'create-school-menu'}>
-            <div className={"create-school-menu-header"}>
-                <h1>Create a school</h1>
+        <div className={addGroup ? 'visible create-group-menu' : 'create-group-menu'}>
+            <div className={"create-group-menu-header"}>
+                <h1>Create a group</h1>
             </div>
-            <form onSubmit={addSchoolSubmit}>
+            <form onSubmit={addGroupSubmit}>
                 <div className={"preview-container"}>
                     <input type='file' onChange={onSelectFile}/>
                     <img className="preview" src={selectedFile}/></div>
-                <input value={schoolFields.nom} onChange={addSchoolChangeHandler} required
-                       placeholder="Nom de l'école" name="nom"/>
-                <input value={schoolFields.description} onChange={addSchoolChangeHandler} required
+                <input value={groupFields.nom} onChange={addGroupChangeHandler} required
+                       placeholder="Group name" name="nom"/>
+                <input value={groupFields.description} onChange={addGroupChangeHandler} required
                        placeholder="Description" name="description"/>
 
                 <button type="submit">Create</button>

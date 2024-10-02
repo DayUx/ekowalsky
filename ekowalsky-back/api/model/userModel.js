@@ -41,7 +41,21 @@ const userSchema = new mongoose.Schema({
     profile_img: {
         type: String,
             default: "",
-    }
+    },
+    messages: [{
+        date: {
+            type: 'string',
+            required: true
+        },
+        message: {
+            type: 'string',
+            required: true
+        },
+        user_id: {
+            type: 'string',
+            required: true
+        }
+    }]
 });
 
 

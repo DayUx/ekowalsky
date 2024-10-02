@@ -3,7 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const userRoutes = require('./api/routes/userRoutes');
 const socket = require("socket.io");
-const {hasAccess} = require("./api/controller/schoolController");
+const {hasAccess} = require("./api/controller/groupController");
 const jwt = require("jsonwebtoken");
 var bodyParser = require('body-parser');
 
@@ -45,10 +45,10 @@ io.on("connection", (socket) => {
     socket.on("joinRoom", (data) => {
         try {
             const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
-            if (hasAccess(decoded.id, data.school_id)) {
-                console.log("User has access to this school");
-                console.log(data.school_id);
-                socket.join(data.school_id);
+            if (hasAccess(decoded.id, data.group_id)) {
+                console.log("User has access to this group");
+                console.log(data.group_id);
+                socket.join(data.group_id);
             }
 
         } catch (e) {

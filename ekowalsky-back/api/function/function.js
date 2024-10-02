@@ -3,12 +3,12 @@ var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:30000/social_network";
 
 class User {
-    constructor(name, mail, passwd, profile_img, school_name, job, old_age) {
+    constructor(name, mail, passwd, profile_img, group_name, job, old_age) {
         this.name = name;
         this.mail = mail;
         this.password = passwd;
         this.profile_img = profile_img;
-        this.school_name = school_name;
+        this.group_name = group_name;
         this.job = job;
         this.old_age = old_age;
     }
@@ -23,7 +23,7 @@ class User {
         // création de la collection
         dbo.createCollection("User", {
             bsonType: "object",
-            required: ["name", "mail", "password", "profile_img", "school_name", "job", "old_age"],
+            required: ["name", "mail", "password", "profile_img", "group_name", "job", "old_age"],
             properties: {
                 name: {
                     bsonType: "string", description: "must be a string and is required"
@@ -33,7 +33,7 @@ class User {
                     bsonType: "string", description: "must be an integer and is required"
                 }, profile_img: {
                     bsonType: "string", description: "must be a string and is required"
-                }, school_name: {
+                }, group_name: {
                     bsonType: "string", description: "must be a string and is required"
                 }, job: {
                     bsonType: "string", description: "must be a string and is required"
@@ -42,7 +42,7 @@ class User {
                 }
             }
         });
-        dbo.createCollection("School", {
+        dbo.createCollection("Group", {
 
             bsonType: "object", required: ["nom", "description", "ville", "messages", "users"], properties: {
                 nom: {
@@ -89,13 +89,13 @@ class User {
     }
 
     /**
-     * Allows you to delete a school in the db
-     * @param {*} nom name of the school you want to delete
-     * @param {*} ville city of the school you want to delete
+     * Allows you to delete a group in the db
+     * @param {*} nom name of the group you want to delete
+     * @param {*} ville city of the group you want to delete
      */
-    deleteSchool(nom, ville) {
+    deleteGroup(nom, ville) {
         var myquery = {nom: nom, ville: ville};
-        dbo.collection("School").deleteOne(myquery, function (err, obj) {
+        dbo.collection("Group").deleteOne(myquery, function (err, obj) {
             if (err) throw err;
             console.log("1 document deleted");
             db.close();
@@ -108,7 +108,7 @@ class User {
      * @param {*} mail the mails of the users
      * @param {*} password the password of the users
      * @param {*} profile_img the images link of the users
-     * @param {*} school_name the school names of the users
+     * @param {*} group_name the group names of the users
      * @param {*} job the jobs of the users
      * @param {*} old_age the ages of the users
      */
@@ -127,12 +127,12 @@ class User {
     }
 
     /**
-     * Allows to insert ONE school
+     * Allows to insert ONE group
      * @param {*} name
      * @param {*} description
      * @param {*} ville
      */
-    insertSchool(name, description, ville, users_id) {
+    insertGroup(name, description, ville, users_id) {
         var msg = []
         var usr = [{
             user_id: users_id
@@ -140,7 +140,7 @@ class User {
         var myobj = [{
             nom: name, description: description, ville: ville, messages: msg, users: usr
         }]
-        dbo.collection("School").insertOne(myobj, function (err, res) {
+        dbo.collection("Group").insertOne(myobj, function (err, res) {
             if (err) throw err;
             console.log("1 document inserted");
             db.close();
@@ -156,13 +156,13 @@ class User {
      */
     verifyExistingUser(mail, mdp) {
         var tmp = null;
-        dbo.collection("User").findOne({name, profile_img, school_name, job, old_age}, {
+        dbo.collection("User").findOne({name, profile_img, group_name, job, old_age}, {
             mail: mail, password: mdp
         }, function (err, result) {
             if (err) throw err;
             console.log(result.name);
             if (result.name != null) {
-                return [name, profile_img, school_name, job, old_age];
+                return [name, profile_img, group_name, job, old_age];
             }
             db.close();
         });
