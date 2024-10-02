@@ -1,4 +1,4 @@
-export const host = 'https://backendskool.herokuapp.com/';
+export const host = 'http://localhost';
 export const registerRoute = host + '/register';
 export const loginRoute = host + '/login';
 export const userProfileRoute = host + '/userProfile';

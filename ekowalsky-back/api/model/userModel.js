@@ -1,5 +1,5 @@
-var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/";
+const MongoClient = require('mongodb').MongoClient;
+const url = "mongodb://localhost:27017/";
 const yargs = require('yargs/yargs')
 const {hideBin} = require('yargs/helpers')
 const argv = yargs(hideBin(process.argv)).argv
@@ -22,7 +22,6 @@ const userSchema = new mongoose.Schema({
             minlength: 2,
             maxlength: 50,
             trim: true,
-
     },
     email: {
         type: String,

@@ -11,7 +11,11 @@ var bodyParser = require('body-parser');
 const app = express();
 require('dotenv').config();
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+    optionsSuccessStatus: 200
+}));
 app.use(express.json());
 app.use(bodyParser.json({limit: '5mb'}));
 app.use('/', userRoutes);

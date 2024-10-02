@@ -2,6 +2,7 @@
   "name": "mon-app",
   "version": "0.1.0",
   "private": true,
+  "main": "./src/index.js",
   "proxy": "http://localhost:3000",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.1",

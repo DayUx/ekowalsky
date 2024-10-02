@@ -145,7 +145,7 @@ export default function Register() {
                 <input className="btn" value="Register" type="submit"/>
             </form>
             <div className={"login-div"}>
-                <h1>Already register ?</h1>
+                <h1>Already registered ?</h1>
                 <button onClick={redirection}>Log In</button>
             </div>
         <ToastContainer/>

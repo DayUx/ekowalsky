@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  database:
+    container_name: database
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - db_data:/data/db
+      - db_config:/data/configdb
+    networks:
+      - bridge
+volumes:
+  db_data:
+  db_config:
+
+
+networks:
+  bridge:
+    driver: bridge
