@@ -1,15 +1,22 @@
 import React, {useEffect, useRef, useState} from 'react';
 
 import {
-    getGroupsOfUserRoute, getGroupsRoute, createGroupRoute, joinGroupRoute, quitGroupRoute, host, getUserRoute
+    createGroupRoute,
+    getGroupsOfUserRoute,
+    getGroupsRoute, getMessagesRoute, getPrivateMessages,
+    getUserRoute, getUsersByGroupRoute,
+    host,
+    joinGroupRoute,
+    quitGroupRoute, sendMessageRoute, sendPrivateMessageRoute
 } from "../../utils/APIRoutes";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faPlus, faEllipsisV, faUsers, faSignOutAlt, faTimes} from '@fortawesome/free-solid-svg-icons'
+import {faEllipsisV, faPlus, faSignOutAlt, faTimes} from '@fortawesome/free-solid-svg-icons'
 import {useNavigate} from "react-router-dom";
 import Chat from "../Chat/Chat";
 
 import {io} from "socket.io-client";
 import UserProfile from "../UserProfile/UserProfile";
+import {click} from "@testing-library/user-event/dist/click";
 
 export default function Dashboard() {
 
@@ -17,9 +24,11 @@ export default function Dashboard() {
     const user = localStorage.getItem('user');
     const [myGroups, setMyGroups] = useState([]);
     const [groups, setGroups] = useState([]);
+    const [users, setUsers] = useState([]);
     const [active, setActive] = useState(false);
     const [addGroup, setAddGroup] = useState(false);
     const [selectedFile, setSelectedFile] = useState();
+    const [selectedUser, setSelectedUser] = useState();
     const [filter, setFilter] = useState('');
     const [selectedGroup, setSelectedGroup] = useState({});
     const [groupMenu, setGroupMenu] = useState(false);
@@ -35,16 +44,39 @@ export default function Dashboard() {
     const [overlay, setOverlay] = useState(false);
 
     useEffect(() => {
-        if (selectedGroup._id) {
+        if (selectedGroup?._id) {
+            setSelectedUser(null)
+            fetch(getUsersByGroupRoute, {
+                body: JSON.stringify({id: selectedGroup._id}),
+                method: 'POST', headers: {
+                    'Content-Type': 'application/json', 'x-access-token': user
+                }
+            }).then(response => response.json().then(data => ({
+                data: data, status: response.status
+            })).then(res => {
+                setUsers(res.data.users);
+            }))
             if (socket.current) {
                 socket.current.removeAllListeners("msg-receive");
             }
             socket.current = io(host);
             socket.current.emit("joinRoom", {token: user, group_id: selectedGroup._id});
             console.log(socket.current);
-            chatFunc.refresh();
+            chatFunc.refresh(getPrivateMessages, selectedGroup._id);
         }
     }, [selectedGroup]);
+    useEffect(() => {
+        if (selectedUser?._id) {
+            setSelectedGroup(null)
+            if (socket.current) {
+                socket.current.removeAllListeners("msg-receive");
+            }
+            socket.current = io(host);
+            socket.current.emit("joinChat", {token: user, to: selectedUser._id});
+            console.log(socket.current);
+            chatFunc.refresh(getPrivateMessages, selectedUser._id);
+        }
+    }, [selectedUser]);
 
     const createGroup = () => {
         setOverlay(true);
@@ -239,6 +271,47 @@ export default function Dashboard() {
 
     }
 
+    function getGroupHeader() {
+        return selectedGroup?._id ? <div className="group-page-header">
+            <div className={"group-page-title"}>
+                <h1>
+                    {selectedGroup.nom}
+                </h1>
+                <p>
+                    {selectedGroup.description}
+                </p>
+            </div>
+            <button onClick={() => {
+                setGroupMenu(true);
+                setOverlay(true);
+            }}><FontAwesomeIcon icon={faEllipsisV}/></button>
+        </div> : <h2>No group selected</h2>;
+    }
+
+    function getUserHeader() {
+        return selectedUser?._id ? <div className="group-page-header">
+            <div className={"group-page-title"}>
+                <h1>
+                    {selectedUser.first_name}
+                </h1>
+                <p>
+                    {selectedUser.second_name}
+                </p>
+            </div>
+        </div> : <h2>No group selected</h2>;
+    }
+
+    function getGroupChat() {
+        return  selectedGroup?._id  ? <Chat getMessagesRoute={getMessagesRoute} sendMessageUrl={sendMessageRoute} group={selectedGroup} socket={socket} chatFunc={chatFunc}/> :null;
+    }function getPrivateChat() {
+        return selectedUser?._id ?  <Chat group={selectedUser} getMessagesRoute={getPrivateMessages} sendMessageUrl={sendPrivateMessageRoute} socket={socket} chatFunc={chatFunc}/> : null;
+    }
+
+    function getChat() {
+        return selectedGroup?._id ?
+            getGroupChat() : getPrivateChat();
+    }
+
     return (<div className="dashboard">
         <nav>
             <div className="nav-wrapper">
@@ -266,32 +339,23 @@ export default function Dashboard() {
         </nav>
         <div className="group-page">
 
-            {modifyProfile ? <UserProfile/> : (
-                selectedGroup._id ? <div className="group-page-header">
-                        <div className={"group-page-title"}>
-                            <h1>
-                                {selectedGroup.nom}
-                            </h1>
-                            <p>
-                                {selectedGroup.description}
-                            </p>
-                        </div>
-                        <button onClick={() => {
-                            setGroupMenu(true);
-                            setOverlay(true);
-                        }}><FontAwesomeIcon icon={faEllipsisV}/></button>
-                    </div> : <h2>No group selected</h2>)
+            {modifyProfile ? <UserProfile/> : selectedUser?._id ? getUserHeader() : getGroupHeader()
             }
-            {modifyProfile?undefined:(selectedGroup._id ? <Chat group={selectedGroup} socket={socket} chatFunc={chatFunc}/> : null)}
+            {modifyProfile ? undefined : getChat()}
 
 
 
-
-
-
-
-
-
+        </div>
+        <div className="users">
+            <div className="users-list">
+                {users.map((user, index) => {
+                    return <div className={"user"} onClick={() => setSelectedUser(user)} style={{
+                        backgroundImage: "url(" + user.profile_img + ")",
+                    }}>
+                        <h2>{user.first_name} {user.second_name}</h2>
+                    </div>
+                })}
+            </div>
         </div>
         <div className={active ? 'visible addGroupMenu' : 'addGroupMenu'}>
             <div className={"existing-groups"}>
@@ -306,8 +370,8 @@ export default function Dashboard() {
                             groups.map((group, index) => {
                                 if (!filter || group.nom.toLowerCase().includes(filter.toLowerCase())) {
                                     return <div onClick={() => {
-                                        joinGroup(group._id)
-                                    }} className="group-button" value={group._id}>
+                                        joinGroup(group?._id)
+                                    }} className="group-button" value={group?._id}>
                                         <div className={"group-button-icon"} style={{
                                             backgroundImage: "url(" + group.image + ")",
                                         }}></div>
@@ -328,7 +392,7 @@ export default function Dashboard() {
         <div className={groupMenu ? "group-menu visible" : "group-menu"}>
             <button onClick={closeEverything}><FontAwesomeIcon icon={faTimes}/></button>
             <button onClick={() => {
-                quitGroup(selectedGroup._id);
+                quitGroup(selectedGroup?._id);
                 closeEverything();
 
             }}><FontAwesomeIcon icon={faSignOutAlt}/></button>

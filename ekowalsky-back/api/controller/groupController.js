@@ -1,6 +1,8 @@
 const Group = require('../model/groupModel');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
+const Users = require("../model/userModel");
+const Chats = require("../model/chatModel");
 
 module.exports.images = async (req, res, next) => {
     try {
@@ -28,6 +30,42 @@ module.exports.hasAccess = async (userId, groupId) => {
 
     } catch (e) {
         return false;
+    }
+}
+module.exports.getChatId = async (from, to) => {
+    try {
+        const userJson = await Users.findById(from);
+        const chat = await Chats.findOne({ $or: [{ user_one: userJson.id, user_two: to }, { user_one: to, user_two: userJson.id }] });
+        if (!chat) {
+            const newChat = await Chats.create({
+                user_one: userJson.id,
+                user_two: to,
+                messages: []
+            });
+            return newChat._id.toString();
+        } else {
+            return chat._id.toString();
+        }
+    } catch (e) {
+        return null;
+    }
+}
+
+module.exports.getAllUsersByGroup = async (req, res, next) => {
+    try {
+        const token = req.headers['x-access-token'];
+        const userJson = await jwt.verify(token, process.env.JWT_SECRET);
+        const group = await Group.findById(req.body.id)
+        if (!group) {
+            return res.json({status: false, message: "Group not found"});
+        } else if (!group.users.find(user => user.user_id === userJson.id)) {
+            return res.json({status: false, message: "You are not in this group"});
+        } else {
+            const users = await Users.find({"_id": {$in: group.users.map(user => mongoose.Types.ObjectId(user.user_id))}}, {password: 0})
+            return res.json({status: true, users: users});
+        }
+    } catch (e) {
+        next(e);
     }
 }
 

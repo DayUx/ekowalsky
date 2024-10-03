@@ -1,5 +1,5 @@
-const {register,login, getUser,updateUser} = require("../controller/userController");
-const {images, messages, getGroups,createGroup,joinGroup, quitGroup, sendMessage} = require("../controller/groupController")
+const {register,login, getUser,updateUser, sendPrivateMessage, getPrivateMessages} = require("../controller/userController");
+const {images, messages, getGroups,createGroup,joinGroup, quitGroup, sendMessage, getAllUsersByGroup} = require("../controller/groupController")
 const router = require('express').Router();
 router.post("/register", register);
 router.post("/login",login);
@@ -10,8 +10,11 @@ router.post("/createGroup", createGroup)
 router.post("/joinGroup", joinGroup)
 router.post("/quitGroup", quitGroup)
 router.post("/sendMessage",sendMessage)
+router.post("/sendPrivateMessage",sendPrivateMessage)
 router.post("/getUser", getUser)
 router.post("/updateUser", updateUser)
+router.post('/getAllUsersByGroup', getAllUsersByGroup)
+router.post('/getPrivateMessages', getPrivateMessages)
 router.post("/ping", (req, res) => {
     res.send("pong");
 });

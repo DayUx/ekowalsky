@@ -1,13 +1,12 @@
 import React, {useEffect, useRef, useState} from "react";
-import {getMessagesRoute, getUserRoute, sendMessageRoute} from "../../utils/APIRoutes";
+import { getUserRoute} from "../../utils/APIRoutes";
 
 
 import {faPaperPlane} from "@fortawesome/free-solid-svg-icons";
-import {v4 as uuidv4} from "uuid";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 
-export default function Chat({group, socket, chatFunc}) {
+export default function Chat({group, socket, chatFunc, sendMessageUrl,getMessagesRoute}) {
 
     const [messages, setMessages] = useState([]);
     const scrollRef = useRef();
@@ -65,13 +64,13 @@ export default function Chat({group, socket, chatFunc}) {
 
     useEffect(() => {
 
-        chatFunc.refresh = () => {
+        chatFunc.refresh = (url,id) => {
             setMessages([]);
-            fetch(getMessagesRoute, {
+            fetch(url, {
                 method: "POST", headers: {
                     "Content-Type": "application/json", "x-access-token": localStorage.getItem("user")
                 }, body: JSON.stringify({
-                    id_group: group._id
+                    id_group: id
                 })
             }).then(response => response.json().then(data => ({
                 data: data, status: response.status
@@ -90,14 +89,14 @@ export default function Chat({group, socket, chatFunc}) {
                 });
             }
         }
-    });
+    },[]);
 
 
     const handleSendMsg = async (msg) => {
         const data = wt_decode(user);
 
 
-        fetch(sendMessageRoute, {
+        fetch(sendMessageUrl, {
             method: 'POST', headers: {
                 'Content-Type': 'application/json', 'x-access-token': user
             }, body: JSON.stringify({
@@ -165,19 +164,19 @@ export default function Chat({group, socket, chatFunc}) {
                         <div className={"message-user"}>
 
 
-                            {userProfilePicture(message.user_id)}
+                            {userProfilePicture(message?.user_id)}
 
 
                             <div className={"message-user-name"}>
-                                {users[message.user_id]?.first_name}
+                                {users[message?.user_id]?.first_name}
                                 &nbsp;
-                                {users[message.user_id]?.second_name}
+                                {users[message?.user_id]?.second_name}
                                 &nbsp;
                                 <span style={{fontSize:"10px",opacity:0.8}}> {new Date(message?.date * 1).toLocaleString()}</span>
                             </div>
                         </div>
 
-                        <div className={"message-content"}>{message.message}</div>
+                        <div className={"message-content"}>{message?.message}</div>
                     </div>
                 })}
                 <div ref={messagesEndRef} />

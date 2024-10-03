@@ -2,6 +2,8 @@ const Users = require("../model/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require('mongoose');
+const Group = require("../model/groupModel");
+const Chats = require("../model/chatModel");
 module.exports.register = async (req, res, next) => {
     try {
         const {first_name, second_name, email, password,profile_img} = req.body;
@@ -41,7 +43,6 @@ module.exports.getUser = async (req, res, next) => {
         const token = req.headers['x-access-token'];
         const userJson = await jwt.verify(token, process.env.JWT_SECRET);
         const user = await Users.findById(req.body.id,{password:0,email:0});
-        console.log(req.body.id);
         if(!user){
             return res.json({status : false, message: "User not found"});
         }
@@ -51,6 +52,7 @@ module.exports.getUser = async (req, res, next) => {
         next(e);
     }
 }
+
 
 module.exports.login = async (req,res, next) =>{
     try {
@@ -84,6 +86,54 @@ module.exports.login = async (req,res, next) =>{
     }
 };
 
+
+module.exports.sendPrivateMessage = async (req, res, next) => {
+    try {
+        const token = req.headers['x-access-token'];
+        const userJson = await jwt.verify(token, process.env.JWT_SECRET);
+        let chat = await Chats.findOne({ $or: [{ user_one: userJson.id, user_two: req.body.to }, { user_one: req.body.to, user_two: userJson.id }] });
+        let message = req.body.message;
+        let messageObject = {
+            date: new Date(),
+            message: message,
+            user_id: userJson.id
+        };
+        if (!chat) {
+
+            chat = await Chats.create({
+                user_one: userJson.id,
+                user_two: req.body.to,
+                messages: [messageObject]
+            });
+
+        } else {
+            chat.messages.push(messageObject);
+            await chat.save();
+        }
+
+        global.chatSocket.to(chat._id.toString()).emit("msg-receive", {user_id: userJson.id, msg: message, date: Date.now()});
+        return res.json({status: true, message: messageObject});
+
+    } catch (e) {
+        next(e);
+    }
+}
+
+module.exports.getPrivateMessages = async (req, res, next) => {
+    try {
+        const token = req.headers['x-access-token'];
+        const userJson = await jwt.verify(token, process.env.JWT_SECRET);
+
+        const chat = await Chats.findOne({ $or: [{ user_one: userJson.id, user_two: req.body.id_group }, { user_one: req.body.id_group, user_two: userJson.id }] });
+        if (!chat) {
+            return res.json({status: false, message: "Chat not found"});
+        } else {
+            return res.json({status: true, messages: chat.messages});
+        }
+    } catch (e) {
+        next(e);
+    }
+}
 
 module.exports.updateUser = async (req, res, next) => {
     try {

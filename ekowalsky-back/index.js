@@ -3,7 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const userRoutes = require('./api/routes/userRoutes');
 const socket = require("socket.io");
-const {hasAccess} = require("./api/controller/groupController");
+const {hasAccess, getChatId} = require("./api/controller/groupController");
 const jwt = require("jsonwebtoken");
 var bodyParser = require('body-parser');
 
@@ -17,7 +17,8 @@ app.use(cors({
     optionsSuccessStatus: 200
 }));
 app.use(express.json());
-app.use(bodyParser.json({limit: '5mb'}));
+app.use(express.json({ limit: '5mb' }));
+app.use(bodyParser.json({ limit: '5mb' }));
 app.use('/', userRoutes);
 
 mongoose.connect(process.env.DB_URI, {
@@ -51,6 +52,17 @@ io.on("connection", (socket) => {
                 socket.join(data.group_id);
             }
 
+        } catch (e) {
+
+        }
+    });
+    socket.on("joinChat", (data) => {
+        try {
+            const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
+            const chat_id = getChatId(decoded.id, data.to).then((chat_id) => {
+                socket.join(chat_id);
+                console.log("connected to " + chat_id);
+            })
         } catch (e) {
 
         }
