@@ -17,7 +17,7 @@ import Chat from "../Chat/Chat";
 import {io} from "socket.io-client";
 import UserProfile from "../UserProfile/UserProfile";
 import {click} from "@testing-library/user-event/dist/click";
-import { get } from 'mongoose';
+import { get, set } from 'mongoose';
 
 export default function Dashboard() {
 
@@ -26,11 +26,13 @@ export default function Dashboard() {
     const [myGroups, setMyGroups] = useState([]);
     const [groups, setGroups] = useState([]);
     const [users, setUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
     const [active, setActive] = useState(false);
     const [addGroup, setAddGroup] = useState(false);
     const [selectedFile, setSelectedFile] = useState();
     const [selectedUser, setSelectedUser] = useState();
     const [filter, setFilter] = useState('');
+    const [userFilter, setUserFilter] = useState('');
     const [selectedGroup, setSelectedGroup] = useState({});
     const [groupMenu, setGroupMenu] = useState(false);
     const [imageProfile, setImageProfile] = useState('');
@@ -39,10 +41,20 @@ export default function Dashboard() {
         name: '', description: '',
     });
 
+
     const chatFunc = useRef(null);
     const socket = useRef();
     let groupsLoaded = false;
     const [overlay, setOverlay] = useState(false);
+
+
+    useEffect(() => {
+            const userFilterString = userFilter.toLowerCase() || "";
+        setFilteredUsers(users.filter((u) => {
+            return u.first_name?.toLowerCase()?.includes(userFilterString.toLowerCase()) || u?.second_name?.toLowerCase().includes(userFilterString.toLowerCase());
+        }
+
+        ));
 
     useEffect(() => {
         if (selectedGroup?._id) {
@@ -357,8 +369,14 @@ export default function Dashboard() {
         </div>
 
 {
-    users?.length ? <div className="users"> <div className="users-list">
-    {users.map((u) => {
+    users?.length ? <div className="users"> 
+    
+    <input placeholder={"Search a user"} value={userFilter} onChange={(e) => {
+        setUserFilter(e.target.value)
+    }} className={"users-filter"}/>
+
+    <div className="users-list">
+    {filteredUsers.map((u) => {
         return <div  className={
             selectedUser?._id === u?._id ? "user selected" : "user"} onClick={() => setSelectedUser(u)} style={{
             backgroundImage: "url(" + u.profile_img + ")",
