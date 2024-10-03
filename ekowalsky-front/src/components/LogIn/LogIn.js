@@ -60,7 +60,13 @@ export default function LogIn() {
                 } else {
                     console.log(res.data);
                 }
-            }))
+            })).catch((error) => {
+            error.json().then((body) => {
+                toast.error(body.message);
+            });
+                fields.password = '';
+        }
+        );
     };
 
     return (<div className="login-register-div">
