@@ -58,6 +58,7 @@ export default function LogIn() {
                     navigate('/');
                 } else {
                     toast.error(res.data.message);
+                    fields.password = '';
                 }
             }));
     };
