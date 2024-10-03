@@ -55,18 +55,11 @@ export default function LogIn() {
                 console.log(res);
                 if (res.data.status === true) {
                     localStorage.setItem('user', res.data.user);
-                    console.log(res.data.user);
                     navigate('/');
                 } else {
-                    console.log(res.data);
+                    toast.error(res.data.message);
                 }
-            })).catch((error) => {
-            error.json().then((body) => {
-                toast.error(body.message);
-            });
-                fields.password = '';
-        }
-        );
+            }));
     };
 
     return (<div className="login-register-div">
