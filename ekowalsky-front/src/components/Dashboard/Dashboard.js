@@ -49,12 +49,11 @@ export default function Dashboard() {
 
 
     useEffect(() => {
-            const userFilterString = userFilter.toLowerCase() || "";
-        setFilteredUsers(users.filter((u) => {
-            return u.first_name?.toLowerCase()?.includes(userFilterString.toLowerCase()) || u?.second_name?.toLowerCase().includes(userFilterString.toLowerCase());
-        }
 
-        ));
+        setFilteredUsers(users.filter((u) => {
+            return u.first_name.toLowerCase().includes(userFilter.toLowerCase()) || u.second_name.toLowerCase().includes(userFilter.toLowerCase());
+        }));
+    },[users]);
 
     useEffect(() => {
         if (selectedGroup?._id) {
