@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 
 :root {
-    --main-blue: #2684ff;
-    --secondary-blue: #0254CFFF;
-    --dark-blue: #253858;
+    --main-blue: #1fd506;
+    --secondary-blue: #00b325;
+    --dark-blue: #255826;
     --main-yellow: #FFCB77;
     --main-white: #fff;
     --secondary-white: #fafcfe;
@@ -18,11 +18,11 @@
 
 
 [data-theme="dark"] {
-    --main-blue: #2684ff;
-    --secondary-blue: #0254CFFF;
-    --dark-blue: #b7babd;
+    --main-blue: #51ff26;
+    --secondary-blue: rgb(50, 207, 2);
+    --dark-blue: #b7bdb7;
     --main-yellow: #FFCB77;
-    --main-white: #3b3b41;
+    --main-white: #3c413b;
     --secondary-white: #575757;
     --tertiary-white: #777777;
     --secondary-grey: #676767;
@@ -770,6 +770,15 @@ input{
     cursor: pointer;
     transition: 0.5s;
     box-shadow: inset 0px 0px 0px 0px var(--main-blue);
+}
+
+
+.users {
+background: var(--main-white);
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .user:hover {

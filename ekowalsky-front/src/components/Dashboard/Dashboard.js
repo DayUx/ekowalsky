@@ -355,18 +355,21 @@ export default function Dashboard() {
 
 
         </div>
-        <div className="users">
-            <div className="users-list">
-                {users.map((u, index) => {
-                    return <div  className={
-                        selectedUser?._id === u?._id ? "user selected" : "user"} onClick={() => setSelectedUser(u)} style={{
-                        backgroundImage: "url(" + u.profile_img + ")",
-                    }}>
-                        <h2>{u.first_name} {u.second_name}</h2>
-                    </div>
-                })}
-            </div>
+
+{
+    users?.length ? <div className="users"> <div className="users-list">
+    {users.map((u) => {
+        return <div  className={
+            selectedUser?._id === u?._id ? "user selected" : "user"} onClick={() => setSelectedUser(u)} style={{
+            backgroundImage: "url(" + u.profile_img + ")",
+        }}>
+            <h2>{u.first_name} {u.second_name}</h2>
         </div>
+    })}
+</div>
+</div>:null
+}
+        
         <div className={active ? 'visible addGroupMenu' : 'addGroupMenu'}>
             <div className={"existing-groups"}>
                 <div className="addGroupMenu_header">
