@@ -17,6 +17,7 @@ import Chat from "../Chat/Chat";
 import {io} from "socket.io-client";
 import UserProfile from "../UserProfile/UserProfile";
 import {click} from "@testing-library/user-event/dist/click";
+import { get } from 'mongoose';
 
 export default function Dashboard() {
 
@@ -54,15 +55,17 @@ export default function Dashboard() {
             }).then(response => response.json().then(data => ({
                 data: data, status: response.status
             })).then(res => {
-                setUsers(res.data.users);
+                setUsers(res.data.users?.filter((u) => {
+                    return u._id !== getUserId();}))
+
             }))
             if (socket.current) {
                 socket.current.removeAllListeners("msg-receive");
             }
             socket.current = io(host);
             socket.current.emit("joinRoom", {token: user, group_id: selectedGroup._id});
-            console.log(socket.current);
-            chatFunc.refresh(getPrivateMessages, selectedGroup._id);
+            console.log("joinRoom", {token: user, group_id: selectedGroup._id});
+            chatFunc.refresh(getMessagesRoute, selectedGroup._id);
         }
     }, [selectedGroup]);
     useEffect(() => {
@@ -73,7 +76,7 @@ export default function Dashboard() {
             }
             socket.current = io(host);
             socket.current.emit("joinChat", {token: user, to: selectedUser._id});
-            console.log(socket.current);
+            console.log("joinChat", {token: user, group_id: selectedGroup._id});
             chatFunc.refresh(getPrivateMessages, selectedUser._id);
         }
     }, [selectedUser]);
@@ -170,6 +173,10 @@ export default function Dashboard() {
         navigate('/login');
     }
 
+    function getUserId(){
+        return wt_decode(user).id;
+    }
+
     function tokenIsExpired(token) {
         var decoded = wt_decode(token);
         var now = new Date();
@@ -207,6 +214,7 @@ export default function Dashboard() {
 
     const quitGroup = (id) => {
         setSelectedGroup({});
+        console.log("quitting group");
         fetch(quitGroupRoute, {
             method: 'POST', headers: {
                 'x-access-token': user, 'Content-Type': 'application/json'
@@ -292,10 +300,11 @@ export default function Dashboard() {
         return selectedUser?._id ? <div className="group-page-header">
             <div className={"group-page-title"}>
                 <h1>
-                    {selectedUser.first_name}
+
+                   Chat privé avec {selectedUser.first_name} {selectedUser.second_name}
                 </h1>
                 <p>
-                    {selectedUser.second_name}
+                    
                 </p>
             </div>
         </div> : <h2>No group selected</h2>;
@@ -348,11 +357,12 @@ export default function Dashboard() {
         </div>
         <div className="users">
             <div className="users-list">
-                {users.map((user, index) => {
-                    return <div className={"user"} onClick={() => setSelectedUser(user)} style={{
-                        backgroundImage: "url(" + user.profile_img + ")",
+                {users.map((u, index) => {
+                    return <div  className={
+                        selectedUser?._id === u?._id ? "user selected" : "user"} onClick={() => setSelectedUser(u)} style={{
+                        backgroundImage: "url(" + u.profile_img + ")",
                     }}>
-                        <h2>{user.first_name} {user.second_name}</h2>
+                        <h2>{u.first_name} {u.second_name}</h2>
                     </div>
                 })}
             </div>

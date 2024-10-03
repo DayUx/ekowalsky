@@ -51,7 +51,6 @@ export default function Chat({group, socket, chatFunc, sendMessageUrl,getMessage
                 data: data, status: response.status
             })).then(res => {
                 if (res.data.status) {
-                    console.log(res.data.user);
                     setUsers({...users, [id]: res.data.user});
                     t[id] = false;
                     setGettingImages(t);
@@ -65,6 +64,7 @@ export default function Chat({group, socket, chatFunc, sendMessageUrl,getMessage
     useEffect(() => {
 
         chatFunc.refresh = (url,id) => {
+            console.log("refreshing chat", url, id);
             setMessages([]);
             fetch(url, {
                 method: "POST", headers: {
@@ -83,9 +83,12 @@ export default function Chat({group, socket, chatFunc, sendMessageUrl,getMessage
 
 
             socket.current.removeAllListeners("msg-receive")
+            console.log("removing listener");
             if (socket.current) {
+                console.log("registering listener", socket.current);
                 socket.current.on("msg-receive", (data) => {
-                    setArrivalMessage({user_id: data.user_id, message: data.msg, timestamp: data.timestamp});
+                    console.log(data);
+                    setArrivalMessage({user_id: data.user_id, message: data.message, date: data.date});
                 });
             }
         }
@@ -106,9 +109,9 @@ export default function Chat({group, socket, chatFunc, sendMessageUrl,getMessage
             data: data, status: response.status
         })).then(res => {
             if (res.data.status) {
-                socket.current.emit("send-msg", {
-                    to: group._id, from: user, msg,
-                });
+                // socket.current.emit("send-msg", {
+                //     to: group._id, from: user, msg,
+                // });
                 const msgs = [...messages];
                 msgs.push(res.data.message);
                 setMessages(msgs);
@@ -172,7 +175,7 @@ export default function Chat({group, socket, chatFunc, sendMessageUrl,getMessage
                                 &nbsp;
                                 {users[message?.user_id]?.second_name}
                                 &nbsp;
-                                <span style={{fontSize:"10px",opacity:0.8}}> {new Date(message?.date * 1).toLocaleString()}</span>
+                                <span style={{fontSize:"10px",opacity:0.8}}> {new Date(message?.date).toLocaleString()}</span>
                             </div>
                         </div>
 

@@ -758,3 +758,25 @@ input{
     border-radius: 10px;
     transition: 0.1s;
 }
+
+
+.user {
+    width: 80px;
+    height: 80px;
+    border-radius: 100px;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.5s;
+    box-shadow: inset 0px 0px 0px 0px var(--main-blue);
+}
+
+.user:hover {
+    box-shadow: inset 0px 0px 0px 5px var(--main-blue);
+}
+
+.user.selected {
+    box-shadow: inset 0px 0px 0px 5px var(--main-blue);
+    
+}
