@@ -53,7 +53,7 @@ export default function Dashboard() {
         setFilteredUsers(users.filter((u) => {
             return u.first_name.toLowerCase().includes(userFilter.toLowerCase()) || u.second_name.toLowerCase().includes(userFilter.toLowerCase());
         }));
-    },[users]);
+    },[userFilter,users]);
 
     useEffect(() => {
         if (selectedGroup?._id) {
