@@ -1,7 +1,6 @@
 # ekowalsky
 
-PORT
-
-DB_URI
-
-JWT_SECRET
+# Launch
+```bash
+docker-compose up -d
+```
