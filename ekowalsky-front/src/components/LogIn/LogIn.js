@@ -3,6 +3,7 @@ import {loginRoute} from "../../utils/APIRoutes";
 import {useNavigate} from 'react-router-dom';
 import {AuthContext} from "../AuthProvider";
 import {toast, ToastContainer} from "react-toastify";
+import { set } from 'mongoose';
 
 export default function LogIn() {
     const navigate = useNavigate();
@@ -58,7 +59,7 @@ export default function LogIn() {
                     navigate('/');
                 } else {
                     toast.error(res.data.message);
-                    fields.password = '';
+                    setFields({...fields,password:''});
                 }
             }));
     };
