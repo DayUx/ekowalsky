@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+import logo from './logo.png';
 import './App.css';
 import Footer from "./components/Footer/Footer";
 import LogIn from "./components/LogIn/LogIn";

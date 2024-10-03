@@ -3,6 +3,7 @@ import {loginRoute} from "../../utils/APIRoutes";
 import {useNavigate} from 'react-router-dom';
 import {AuthContext} from "../AuthProvider";
 import {toast, ToastContainer} from "react-toastify";
+import { set } from 'mongoose';
 
 export default function LogIn() {
     const navigate = useNavigate();
@@ -55,12 +56,12 @@ export default function LogIn() {
                 console.log(res);
                 if (res.data.status === true) {
                     localStorage.setItem('user', res.data.user);
-                    console.log(res.data.user);
                     navigate('/');
                 } else {
-                    console.log(res.data);
+                    toast.error(res.data.message);
+                    setFields({...fields,password:''});
                 }
-            }))
+            }));
     };
 
     return (<div className="login-register-div">

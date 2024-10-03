@@ -169,11 +169,11 @@ module.exports.sendMessage = async (req, res, next) => {
         } else if (!msg.users.find(user => user.user_id === userJson.id)) {
             return res.json({status: false, message: "You are not in this group"});
         } else {
-            msg.messages.push({user_id: userJson.id, date: Date.now(), message: message});
+            const messageJson = {user_id: userJson.id, date: Date.now(), message: message}
+            msg.messages.push(messageJson);
             await msg.save();
-
-
-            return res.json({status: true, message: {user_id: userJson.id, date: Date.now(), message: message}});
+            global.io.to(to).emit("msg-receive", messageJson);
+            return res.json({status: true, message: messageJson});
         }
 
 

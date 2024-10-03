@@ -41,15 +41,16 @@ const io = socket(server, {
 });
 
 global.onlineUsers = new Map();
+global.io = io;
 io.on("connection", (socket) => {
+
     global.chatSocket = socket;
     socket.on("joinRoom", (data) => {
         try {
             const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
             if (hasAccess(decoded.id, data.group_id)) {
-                console.log("User has access to this group");
-                console.log(data.group_id);
                 socket.join(data.group_id);
+                console.log("connected to " + data.group_id);
             }
 
         } catch (e) {
@@ -59,7 +60,7 @@ io.on("connection", (socket) => {
     socket.on("joinChat", (data) => {
         try {
             const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
-            const chat_id = getChatId(decoded.id, data.to).then((chat_id) => {
+            getChatId(decoded.id, data.to).then((chat_id) => {
                 socket.join(chat_id);
                 console.log("connected to " + chat_id);
             })
@@ -70,23 +71,8 @@ io.on("connection", (socket) => {
     socket.on("leave", () => {
         try {
             socket.leaveAll();
-
-
         } catch (e) {
             next(e);
-        }
-    });
-
-    socket.on("send-msg", (data) => {
-        try {
-            const decoded = jwt.verify(data.from, process.env.JWT_SECRET);
-            console.log(data);
-            if (hasAccess(decoded.id, data.to)) {
-                console.log("User has access to thissqd");
-                socket.to(data.to).emit("msg-receive", {user_id: decoded.id, msg: data.msg, timestamp: Date.now()});
-            }
-        } catch (e) {
-            console.log(e);
         }
     });
 });

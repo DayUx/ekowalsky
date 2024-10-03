@@ -111,7 +111,7 @@ module.exports.sendPrivateMessage = async (req, res, next) => {
             await chat.save();
         }
 
-        global.chatSocket.to(chat._id.toString()).emit("msg-receive", {user_id: userJson.id, msg: message, date: Date.now()});
+        global.io.to(chat._id.toString()).emit("msg-receive", messageObject);
         return res.json({status: true, message: messageObject});
 
     } catch (e) {

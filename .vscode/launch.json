@@ -1,0 +1,31 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+
+            "name": "Frontend",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/ekowalsky-front",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run", "start"
+            ],
+        },
+        {
+            "name": "Backend",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/ekowalsky-back",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run", "start"
+            ],
+        },
+       
+    ]
+}
